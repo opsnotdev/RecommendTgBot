@@ -9,7 +9,7 @@ import (
 func main() {
 	tokenFile, errRead := os.ReadFile("token.txt")
 	if errRead != nil {
-		fmt.Println("Failed to open token file")
+		fmt.Println("Failed to open token.txt file")
 		os.Exit(1)
 	}
 
