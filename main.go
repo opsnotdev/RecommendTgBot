@@ -13,5 +13,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Println(string(tokenFile))
+	fmt.Println("Токен Вашего бота:", string(tokenFile))
+
 }
