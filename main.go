@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	//tgbot "github.com/go-telegram/bot"
+)
 
 func main() {
-	fmt.Println("Hello")
+	tokenFile, errRead := os.ReadFile("token.txt")
+	if errRead != nil {
+		fmt.Println("Failed to open token file")
+		os.Exit(1)
+	}
+
+	fmt.Println(string(tokenFile))
 }
