@@ -1,1 +1,3 @@
 1234567890:AABBccddeEFFmR2zSjiQ7_24aABbCcHm9T0
+
+//Коммент для проверки работы .gitignore
