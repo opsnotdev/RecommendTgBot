@@ -22,7 +22,7 @@ func randomizeSlice(sliceCategory []string) []string {
 
 func main() {
 
-	games := []string{"Far Cry 3", "Cyberpunk 2077", "Ведьмак 3: Дикая Охота", "Stronghold 2", "Tetris", "Эщкер фром Трахов"}
+	games := []string{"Far Cry 3", "Cyberpunk 2077", "Ведьмак 3: Дикая Охота", "Stronghold 2", "Tetris", "Escape from Tarkov"}
 	films := []string{}
 	books := []string{}
 
