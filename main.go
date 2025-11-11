@@ -5,21 +5,24 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// Берёт три рандомных значения из категории
+// Берёт рандомные значения из категории
 func randomizeSlice(sliceCategory []string, displayRange int) []string {
 	newSlice := []string{}
 	if displayRange > len(sliceCategory) {
 		displayRange = len(sliceCategory)
 	}
-	for range displayRange {
+	for len(newSlice) < displayRange {
 		randomNumber := rand.Intn(len(sliceCategory))
-		newSlice = append(newSlice, sliceCategory[randomNumber])
+		if !slices.Contains(newSlice, sliceCategory[randomNumber]) {
+			newSlice = append(newSlice, sliceCategory[randomNumber])
+		}
 	}
 	return newSlice
 }
@@ -159,7 +162,7 @@ func main() {
 							tgbot.Send(msg)
 						}
 					} else {
-						if len(games) == 0 {
+						if len(books) == 0 {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одной книги")
 							tgbot.Send(msg)
 						} else {
@@ -183,7 +186,7 @@ func main() {
 							tgbot.Send(msg)
 						}
 					} else {
-						if len(games) == 0 {
+						if len(films) == 0 {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одного фильма")
 							tgbot.Send(msg)
 						} else {
