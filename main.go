@@ -5,15 +5,19 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 // Берёт три рандомных значения из категории
-func randomizeSlice(sliceCategory []string) []string {
+func randomizeSlice(sliceCategory []string, displayRange int) []string {
 	newSlice := []string{}
-	for i := 0; i < 3; i++ {
+	if displayRange > len(sliceCategory) {
+		displayRange = len(sliceCategory)
+	}
+	for range displayRange {
 		randomNumber := rand.Intn(len(sliceCategory))
 		newSlice = append(newSlice, sliceCategory[randomNumber])
 	}
@@ -22,9 +26,29 @@ func randomizeSlice(sliceCategory []string) []string {
 
 func main() {
 
-	games := []string{"Far Cry 3", "Cyberpunk 2077", "Ведьмак 3: Дикая Охота", "Stronghold 2", "Tetris", "Escape from Tarkov"}
-	films := []string{}
+	type botCommands struct {
+		command            string
+		commandDescription string
+	}
+
+	commands := []botCommands{
+		{command: "/addGame", commandDescription: " - добавить новую игру в Ваш список игр в формате: \n\"Игра, Описание игры\"\nПример команды: /addGame Spyro, Игра про дракончика\n\n"},
+		{command: "/addBook", commandDescription: " - добавить новую книгу в Вашу библиотеку в формате: \n\"Книга, Описание книги\"\nПример команды: /addBook 1984, Роман-антиутопия\n\n"},
+		{command: "/addFilm", commandDescription: " - добавить новый фильм в Вашу фильмотеку в формате: \n\"Фильм, Описание фильма\"\nПример команды: /addFilm Джонни Мнемоник, фантастика\n\n"},
+		{command: "/getGames", commandDescription: " - посоветовать рандомную игру из Вашего списка.\nПример команды: /getGames \nПример команды, если хотите вывести заданное количество игр: /getGames 3\n\n"},
+		{command: "/getBooks", commandDescription: " - посоветовать рандомную книгу из Вашего списка.\nПример команды: /getBooks \nПример команды, если хотите вывести заданное количество игр: /getBooks 3\n\n"},
+		{command: "/getFilms", commandDescription: " - посоветовать рандомный фильм из Вашего списка.\nПример команды: /getFilms \nПример команды, если хотите вывести заданное количество игр: /getFilms 3\n\n"},
+	}
+
+	commandsSlice := make([]string, 0, len(commands))
+	for _, s := range commands {
+		commandsSlice = append(commandsSlice, s.command, s.commandDescription)
+	}
+
+	//Список массивов, доступных к заполнению, хранению и выводу
+	games := []string{}
 	books := []string{}
+	films := []string{}
 
 	tokenFile, errRead := os.ReadFile("token.txt")
 	if errRead != nil {
@@ -47,54 +71,133 @@ func main() {
 	updates := tgbot.GetUpdatesChan(updateMessage)
 
 	for update := range updates {
+		if update.Message == nil {
+			continue
+		}
 		if update.Message != nil { // Если бот получил новое сообщение
-			if update.Message.From == nil {
-				log.Println("Message has no sender")
-				continue
-			}
-			if update.Message.Text == "" {
-				log.Printf("[%s] sent a non-text message", update.Message.From.UserName)
-				continue
-			}
+			if update.Message.IsCommand() {
 
-			if update.Message.Text == "/start" || update.Message.Text == "/menu" {
-				//	msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Добрый день\nЯ Ваш персональный бот\nЯ могу выполнять следующие команды:\n/addNewBook - для добавления новой книги,\n/addNewGame - для добавления новой игры,\n/addNewFilm - для добавления нового фильма\n")
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID,
-					"Добрый день\nЯ Ваш персональный бот\nЯ могу выполнять следующие команды:\n/getBooks - посоветовать 3 рандомных книги,\n/getGames - посоветовать 3 рандомных игры,\n/getFilms - посоветовать 3 рандомных фильма\n")
+				if update.Message.CommandWithAt() == "start" {
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Привет! Я твой помощник-напоминалка-запоминалка. Я могу выполнять следующие команды: \n\n"+strings.Join(commandsSlice, ""))
+					tgbot.Send(msg)
+				}
+
+				//Добавление игры
+				if update.Message.CommandWithAt() == "addGame" {
+					if update.Message.CommandArguments() != "" {
+						gameDescription := update.Message.CommandArguments()
+						games = append(games, gameDescription)
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Игра успешно добавлена")
+						tgbot.Send(msg)
+					} else {
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Введите имя и описание игры после команды. Например:\n/addGame Spyro, Игра про дракончика")
+						tgbot.Send(msg)
+					}
+				}
+
+				//Добавление книги
+				if update.Message.CommandWithAt() == "addBook" {
+					if update.Message.CommandArguments() != "" {
+						gameDescription := update.Message.CommandArguments()
+						books = append(books, gameDescription)
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Книга успешно добавлена")
+						tgbot.Send(msg)
+					} else {
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Введите имя и описание книги после команды. Например:\n/addBook 1984, Роман-антиутопия")
+						tgbot.Send(msg)
+					}
+				}
+
+				//Добавление фильма
+				if update.Message.CommandWithAt() == "addFilm" {
+					if update.Message.CommandArguments() != "" {
+						gameDescription := update.Message.CommandArguments()
+						films = append(films, gameDescription)
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Фильм успешно добавлен")
+						tgbot.Send(msg)
+					} else {
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Введите имя и описание фильма после команды. Например:\n/addFilm Джонни Мнемоник, фантастика")
+						tgbot.Send(msg)
+					}
+				}
+
+				//Чтение списка игр
+				if update.Message.CommandWithAt() == "getGames" {
+					if update.Message.CommandArguments() != "" {
+						arguments := update.Message.CommandArguments()
+						displayRange, err := strconv.Atoi(arguments)
+						if err == nil {
+							sliceCategory := randomizeSlice(games, displayRange)
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список игр по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceCategory, "\n\n"))
+							tgbot.Send(msg)
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /getGames 3")
+							tgbot.Send(msg)
+						}
+					} else {
+						if len(games) == 0 {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одной игры")
+							tgbot.Send(msg)
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами игр:\n\n"+strings.Join(games, "\n\n"))
+							tgbot.Send(msg)
+						}
+					}
+				}
+
+				//Чтение списка книг
+				if update.Message.CommandWithAt() == "getBooks" {
+					if update.Message.CommandArguments() != "" {
+						arguments := update.Message.CommandArguments()
+						displayRange, err := strconv.Atoi(arguments)
+						if err == nil {
+							sliceCategory := randomizeSlice(books, displayRange)
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список книг по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceCategory, "\n\n"))
+							tgbot.Send(msg)
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /getBooks 3")
+							tgbot.Send(msg)
+						}
+					} else {
+						if len(games) == 0 {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одной книги")
+							tgbot.Send(msg)
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами книг:\n\n"+strings.Join(books, "\n\n"))
+							tgbot.Send(msg)
+						}
+					}
+				}
+
+				//Чтение списка фильмов
+				if update.Message.CommandWithAt() == "getFilms" {
+					if update.Message.CommandArguments() != "" {
+						arguments := update.Message.CommandArguments()
+						displayRange, err := strconv.Atoi(arguments)
+						if err == nil {
+							sliceCategory := randomizeSlice(films, displayRange)
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список фильмов по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceCategory, "\n\n"))
+							tgbot.Send(msg)
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /getFilms 3")
+							tgbot.Send(msg)
+						}
+					} else {
+						if len(games) == 0 {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одного фильма")
+							tgbot.Send(msg)
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами фильмов:\n\n"+strings.Join(films, "\n\n"))
+							tgbot.Send(msg)
+						}
+					}
+				}
+			} //Конец условия if message IsCommand
+
+			if !update.Message.IsCommand() {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Я не знаю такую команду, но я могу выполнять следующие команды: \n\n"+strings.Join(commandsSlice, ""))
 				tgbot.Send(msg)
-				continue
-			}
-
-			if update.Message.Text == "/exit" {
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "До встречи")
-				tgbot.Send(msg)
-			}
-
-			if update.Message.Text == "/getGames" {
-				if len(games) >= 3 {
-					sliceCategory := randomizeSlice(games)
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, strings.Join(sliceCategory, ", "))
-					tgbot.Send(msg)
-				}
-			}
-
-			if update.Message.Text == "/getBooks" {
-				if len(books) >= 3 {
-					sliceCategory := randomizeSlice(books)
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, strings.Join(sliceCategory, ", "))
-					tgbot.Send(msg)
-				}
-			}
-
-			if update.Message.Text == "/getFilms" {
-				if len(films) >= 3 {
-					sliceCategory := randomizeSlice(films)
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, strings.Join(sliceCategory, ", "))
-					tgbot.Send(msg)
-				}
-			}
-
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+			} //Конец условия if message !IsCommand
 		}
 	}
 }
