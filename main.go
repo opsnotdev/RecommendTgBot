@@ -69,6 +69,7 @@ func main() {
 	tgbot, err := tgbotapi.NewBotAPI(string(tokenFile))
 	if err != nil {
 		log.Println("Указан неверный токен бота")
+		os.Exit(1)
 	}
 
 	log.Printf("Authorized on bot-account %s", tgbot.Self.UserName)
