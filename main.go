@@ -46,6 +46,10 @@ func main() {
 		{command: "/getGames", commandDescription: " - посоветовать рандомную игру из Вашего списка.\nПример команды: /getGames \nПример команды, если хотите вывести заданное количество игр: /getGames 3\n\n"},
 		{command: "/getBooks", commandDescription: " - посоветовать рандомную книгу из Вашего списка.\nПример команды: /getBooks \nПример команды, если хотите вывести заданное количество игр: /getBooks 3\n\n"},
 		{command: "/getFilms", commandDescription: " - посоветовать рандомный фильм из Вашего списка.\nПример команды: /getFilms \nПример команды, если хотите вывести заданное количество игр: /getFilms 3\n\n"},
+		{command: "/clearAll", commandDescription: " - очистить все списки.\nПример команды: /clearAll \n\n"},
+		{command: "/clearGames", commandDescription: " - очистить весь список игр или удалить определённое количество игр из списка.\nПример команды: /clearGames или /clearGames 3 \n\n"},
+		{command: "/clearBooks", commandDescription: " - очистить весь список книг или удалить определённое количество книг из списка.\nПример команды: /clearBooks или /clearBooks 3 \n\n"},
+		{command: "/clearFilms", commandDescription: " - очистить весь список фильмов или удалить определённое количество фильмов из списка.\nПример команды: /clearFilms или /clearFilms 3 \n\n"},
 	}
 
 	commandsSlice := make([]string, 0, len(commands))
@@ -228,12 +232,97 @@ func main() {
 						}
 					}
 				}
-			} //Конец условия if message IsCommand
 
-			if !update.Message.IsCommand() {
+				//Очистка всех списков /clearAll
+				if update.Message.CommandWithAt() == "clearAll" {
+					games = []propertiesOfElement{}
+					books = []propertiesOfElement{}
+					films = []propertiesOfElement{}
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Списки успешно очищены")
+					tgbot.Send(msg)
+				}
+
+				//Очистка списка /clearGames
+				if update.Message.CommandWithAt() == "clearGames" {
+					if update.Message.CommandArguments() != "" {
+						arguments := update.Message.CommandArguments()
+						displayRange, err := strconv.Atoi(arguments)
+						if err == nil {
+							if displayRange > 0 && displayRange <= len(games) {
+								games = slices.Delete(games, displayRange-1, displayRange)
+								msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Игра успешно удалена")
+								tgbot.Send(msg)
+							} else {
+								msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вам надо ввести число, не превышающее текущее количество игр ("+strconv.Itoa(len(games))+")")
+								tgbot.Send(msg)
+							}
+
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /clearGames 3")
+							tgbot.Send(msg)
+						}
+					} else {
+						games = []propertiesOfElement{}
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Весь список игр успешно очищен")
+						tgbot.Send(msg)
+					}
+				}
+
+				//Очистка списка /clearBooks
+				if update.Message.CommandWithAt() == "clearBooks" {
+					if update.Message.CommandArguments() != "" {
+						arguments := update.Message.CommandArguments()
+						displayRange, err := strconv.Atoi(arguments)
+						if err == nil {
+							if displayRange > 0 && displayRange <= len(books) {
+								books = slices.Delete(books, displayRange-1, displayRange)
+								msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Книга успешно удалена")
+								tgbot.Send(msg)
+							} else {
+								msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вам надо ввести число, не превышающее текущее количество книг ("+strconv.Itoa(len(books))+")")
+								tgbot.Send(msg)
+							}
+
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /clearBooks 3")
+							tgbot.Send(msg)
+						}
+					} else {
+						books = []propertiesOfElement{}
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Весь список книг успешно очищен")
+						tgbot.Send(msg)
+					}
+				}
+
+				//Очистка списка /clearFilms
+				if update.Message.CommandWithAt() == "clearFilms" {
+					if update.Message.CommandArguments() != "" {
+						arguments := update.Message.CommandArguments()
+						displayRange, err := strconv.Atoi(arguments)
+						if err == nil {
+							if displayRange > 0 && displayRange <= len(films) {
+								films = slices.Delete(films, displayRange-1, displayRange)
+								msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Фильм успешно удалён")
+								tgbot.Send(msg)
+							} else {
+								msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вам надо ввести число, не превышающее текущее количество фильмов ("+strconv.Itoa(len(films))+")")
+								tgbot.Send(msg)
+							}
+
+						} else {
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /clearFilms 3")
+							tgbot.Send(msg)
+						}
+					} else {
+						games = []propertiesOfElement{}
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Весь список фильмов успешно очищен")
+						tgbot.Send(msg)
+					}
+				}
+			} else { //Если сообщение ЭТО НЕ команда
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Я не знаю такую команду, но я могу выполнять следующие команды: \n\n"+strings.Join(commandsSlice, ""))
 				tgbot.Send(msg)
-			} //Конец условия if message !IsCommand
+			} //Конец сообщение ЭТО команда
 		}
 	}
 }
