@@ -12,9 +12,19 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type botCommands struct {
+	command            string
+	commandDescription string
+}
+
+type propertiesOfElement struct {
+	nameDesc  string
+	titleDesc string
+}
+
 // Берёт рандомные значения из категории
-func randomizeSlice(sliceCategory []string, displayRange int) []string {
-	newSlice := []string{}
+func randomizeSlice(sliceCategory []propertiesOfElement, displayRange int) []propertiesOfElement {
+	newSlice := []propertiesOfElement{}
 	if displayRange > len(sliceCategory) {
 		displayRange = len(sliceCategory)
 	}
@@ -28,11 +38,6 @@ func randomizeSlice(sliceCategory []string, displayRange int) []string {
 }
 
 func main() {
-
-	type botCommands struct {
-		command            string
-		commandDescription string
-	}
 
 	commands := []botCommands{
 		{command: "/addGame", commandDescription: " - добавить новую игру в Ваш список игр в формате: \n\"Игра, Описание игры\"\nПример команды: /addGame Spyro, Игра про дракончика\n\n"},
@@ -49,9 +54,9 @@ func main() {
 	}
 
 	//Список массивов, доступных к заполнению, хранению и выводу
-	games := []string{}
-	books := []string{}
-	films := []string{}
+	games := []propertiesOfElement{}
+	books := []propertiesOfElement{}
+	films := []propertiesOfElement{}
 
 	tokenFile, errRead := os.ReadFile("token.txt")
 	if errRead != nil {
@@ -88,8 +93,9 @@ func main() {
 				//Добавление игры
 				if update.Message.CommandWithAt() == "addGame" {
 					if update.Message.CommandArguments() != "" {
-						gameDescription := update.Message.CommandArguments()
-						games = append(games, gameDescription)
+						gameDescription := strings.SplitN(update.Message.CommandArguments(), ", ", 2)
+						gameEntered := propertiesOfElement{nameDesc: gameDescription[0], titleDesc: gameDescription[1]}
+						games = append(games, gameEntered)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Игра успешно добавлена")
 						tgbot.Send(msg)
 					} else {
@@ -101,8 +107,9 @@ func main() {
 				//Добавление книги
 				if update.Message.CommandWithAt() == "addBook" {
 					if update.Message.CommandArguments() != "" {
-						gameDescription := update.Message.CommandArguments()
-						books = append(books, gameDescription)
+						bookDescription := strings.SplitN(update.Message.CommandArguments(), ", ", 2)
+						bookEntered := propertiesOfElement{nameDesc: bookDescription[0], titleDesc: bookDescription[1]}
+						books = append(books, bookEntered)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Книга успешно добавлена")
 						tgbot.Send(msg)
 					} else {
@@ -114,8 +121,9 @@ func main() {
 				//Добавление фильма
 				if update.Message.CommandWithAt() == "addFilm" {
 					if update.Message.CommandArguments() != "" {
-						gameDescription := update.Message.CommandArguments()
-						films = append(films, gameDescription)
+						filmDescription := strings.SplitN(update.Message.CommandArguments(), ", ", 2)
+						filmEntered := propertiesOfElement{nameDesc: filmDescription[0], titleDesc: filmDescription[1]}
+						films = append(films, filmEntered)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Фильм успешно добавлен")
 						tgbot.Send(msg)
 					} else {
@@ -130,8 +138,12 @@ func main() {
 						arguments := update.Message.CommandArguments()
 						displayRange, err := strconv.Atoi(arguments)
 						if err == nil {
-							sliceCategory := randomizeSlice(games, displayRange)
-							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список игр по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceCategory, "\n\n"))
+							sliceOfEntireCategory := randomizeSlice(games, displayRange)
+							sliceMsg := make([]string, 0, len(sliceOfEntireCategory))
+							for _, s := range sliceOfEntireCategory {
+								sliceMsg = append(sliceMsg, s.nameDesc, s.titleDesc)
+							}
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список игр по указанному количеству (или меньше, если элементов меньше указанного количества):\n\n"+strings.Join(sliceMsg, "\n"))
 							tgbot.Send(msg)
 						} else {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /getGames 3")
@@ -142,7 +154,11 @@ func main() {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одной игры")
 							tgbot.Send(msg)
 						} else {
-							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами игр:\n\n"+strings.Join(games, "\n\n"))
+							sliceGames := make([]string, 0, len(games))
+							for _, s := range games {
+								sliceGames = append(sliceGames, s.nameDesc, s.titleDesc)
+							}
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами игр:\n\n"+strings.Join(sliceGames, "\n\n"))
 							tgbot.Send(msg)
 						}
 					}
@@ -154,8 +170,12 @@ func main() {
 						arguments := update.Message.CommandArguments()
 						displayRange, err := strconv.Atoi(arguments)
 						if err == nil {
-							sliceCategory := randomizeSlice(books, displayRange)
-							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список книг по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceCategory, "\n\n"))
+							sliceOfEntireCategory := randomizeSlice(books, displayRange)
+							sliceMsg := make([]string, 0, len(sliceOfEntireCategory))
+							for _, s := range sliceOfEntireCategory {
+								sliceMsg = append(sliceMsg, s.nameDesc, s.titleDesc)
+							}
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список книг по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceMsg, "\n\n"))
 							tgbot.Send(msg)
 						} else {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /getBooks 3")
@@ -166,7 +186,11 @@ func main() {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одной книги")
 							tgbot.Send(msg)
 						} else {
-							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами книг:\n\n"+strings.Join(books, "\n\n"))
+							sliceBooks := make([]string, 0, len(books))
+							for _, s := range books {
+								sliceBooks = append(sliceBooks, s.nameDesc, s.titleDesc)
+							}
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами книг:\n\n"+strings.Join(sliceBooks, "\n\n"))
 							tgbot.Send(msg)
 						}
 					}
@@ -178,8 +202,12 @@ func main() {
 						arguments := update.Message.CommandArguments()
 						displayRange, err := strconv.Atoi(arguments)
 						if err == nil {
-							sliceCategory := randomizeSlice(films, displayRange)
-							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список фильмов по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceCategory, "\n\n"))
+							sliceOfEntireCategory := randomizeSlice(films, displayRange)
+							sliceMsg := make([]string, 0, len(sliceOfEntireCategory))
+							for _, s := range sliceOfEntireCategory {
+								sliceMsg = append(sliceMsg, s.nameDesc, s.titleDesc)
+							}
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список фильмов по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceMsg, "\n\n"))
 							tgbot.Send(msg)
 						} else {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "В качестве аргумента к команде должно быть число.\nНапример: /getFilms 3")
@@ -190,7 +218,11 @@ func main() {
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Вы ещё не добавили ни одного фильма")
 							tgbot.Send(msg)
 						} else {
-							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами фильмов:\n\n"+strings.Join(films, "\n\n"))
+							sliceFilms := make([]string, 0, len(films))
+							for _, s := range films {
+								sliceFilms = append(sliceFilms, s.nameDesc, s.titleDesc)
+							}
+							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами фильмов:\n\n"+strings.Join(sliceFilms, "\n\n"))
 							tgbot.Send(msg)
 						}
 					}
