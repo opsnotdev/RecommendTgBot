@@ -2,17 +2,13 @@ package botmiscfunctions
 
 import (
 	"math/rand"
+	"recommendtgbot/modules/commonvariables"
 	"slices"
 )
 
-type PropertiesOfElement struct {
-	NameDesc  string
-	TitleDesc string
-}
-
 // Берёт рандомные значения из категории
-func RandomizeSlice(sliceCategory []PropertiesOfElement, displayRange int) []PropertiesOfElement {
-	newSlice := []PropertiesOfElement{}
+func RandomizeSlice(sliceCategory []commonvariables.PropertiesOfElement, displayRange int) []commonvariables.PropertiesOfElement {
+	newSlice := []commonvariables.PropertiesOfElement{}
 	if displayRange > len(sliceCategory) {
 		displayRange = len(sliceCategory)
 	}
