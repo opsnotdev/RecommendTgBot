@@ -61,8 +61,8 @@ func main() {
 
 				// Чтение списков
 				if update.Message.CommandWithAt()[:3] == "get" { //Определяем, что команда начинается с get
-					arguments := update.Message.CommandArguments()
-					outputmsg := tgbotapi.NewMessage(update.Message.Chat.ID, msghandlers.GetElement(update.Message.CommandWithAt(), arguments))
+					commandArgs := update.Message.CommandArguments()
+					outputmsg := tgbotapi.NewMessage(update.Message.Chat.ID, msghandlers.GetElement(update.Message.CommandWithAt(), commandArgs))
 					tgbot.Send(outputmsg)
 				}
 
