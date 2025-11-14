@@ -1,4 +1,4 @@
-module main
+module recommendtgbot
 
 go 1.25.4
 
