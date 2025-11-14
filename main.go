@@ -1,66 +1,68 @@
-package recommendtgbot
+package main
 
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"slices"
 	"strconv"
 	"strings"
 
+	"recommendtgbot/modules/botmiscfunctions"
+	"recommendtgbot/modules/msghandlers"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-type botCommands struct {
-	command            string
-	commandDescription string
-}
+// type botCommands struct {
+// 	command            string
+// 	commandDescription string
+// }
 
-type propertiesOfElement struct {
-	nameDesc  string
-	titleDesc string
-}
+// type botmiscfunctions.PropertiesOfElement struct {
+// 	NameDesc  string
+// 	TitleDesc string
+// }
 
 // Берёт рандомные значения из категории
-func randomizeSlice(sliceCategory []propertiesOfElement, displayRange int) []propertiesOfElement {
-	newSlice := []propertiesOfElement{}
-	if displayRange > len(sliceCategory) {
-		displayRange = len(sliceCategory)
-	}
-	for len(newSlice) < displayRange {
-		randomNumber := rand.Intn(len(sliceCategory))
-		if !slices.Contains(newSlice, sliceCategory[randomNumber]) {
-			newSlice = append(newSlice, sliceCategory[randomNumber])
-		}
-	}
-	return newSlice
-}
+// func RandomizeSlice(sliceCategory []botmiscfunctions.PropertiesOfElement, displayRange int) []botmiscfunctions.PropertiesOfElement {
+// 	newSlice := []botmiscfunctions.PropertiesOfElement{}
+// 	if displayRange > len(sliceCategory) {
+// 		displayRange = len(sliceCategory)
+// 	}
+// 	for len(newSlice) < displayRange {
+// 		randomNumber := rand.Intn(len(sliceCategory))
+// 		if !slices.Contains(newSlice, sliceCategory[randomNumber]) {
+// 			newSlice = append(newSlice, sliceCategory[randomNumber])
+// 		}
+// 	}
+// 	return newSlice
+// }
 
 func main() {
 
-	commands := []botCommands{
-		{command: "/addGame", commandDescription: " - добавить новую игру в Ваш список игр в формате: \n\"Игра, Описание игры\"\nПример команды: /addGame Spyro, Игра про дракончика\n\n"},
-		{command: "/addBook", commandDescription: " - добавить новую книгу в Вашу библиотеку в формате: \n\"Книга, Описание книги\"\nПример команды: /addBook 1984, Роман-антиутопия\n\n"},
-		{command: "/addFilm", commandDescription: " - добавить новый фильм в Вашу фильмотеку в формате: \n\"Фильм, Описание фильма\"\nПример команды: /addFilm Джонни Мнемоник, фантастика\n\n"},
-		{command: "/getGames", commandDescription: " - посоветовать рандомную игру из Вашего списка.\nПример команды: /getGames \nПример команды, если хотите вывести заданное количество игр: /getGames 3\n\n"},
-		{command: "/getBooks", commandDescription: " - посоветовать рандомную книгу из Вашего списка.\nПример команды: /getBooks \nПример команды, если хотите вывести заданное количество игр: /getBooks 3\n\n"},
-		{command: "/getFilms", commandDescription: " - посоветовать рандомный фильм из Вашего списка.\nПример команды: /getFilms \nПример команды, если хотите вывести заданное количество игр: /getFilms 3\n\n"},
-		{command: "/clearAll", commandDescription: " - очистить все списки.\nПример команды: /clearAll \n\n"},
-		{command: "/clearGames", commandDescription: " - очистить весь список игр или удалить определённое количество игр из списка.\nПример команды: /clearGames или /clearGames 3 \n\n"},
-		{command: "/clearBooks", commandDescription: " - очистить весь список книг или удалить определённое количество книг из списка.\nПример команды: /clearBooks или /clearBooks 3 \n\n"},
-		{command: "/clearFilms", commandDescription: " - очистить весь список фильмов или удалить определённое количество фильмов из списка.\nПример команды: /clearFilms или /clearFilms 3 \n\n"},
-	}
+	// commands := []BotCommands{
+	// 	{command: "/addGame", commandDescription: " - добавить новую игру в Ваш список игр в формате: \n\"Игра, Описание игры\"\nПример команды: /addGame Spyro, Игра про дракончика\n\n"},
+	// 	{command: "/addBook", commandDescription: " - добавить новую книгу в Вашу библиотеку в формате: \n\"Книга, Описание книги\"\nПример команды: /addBook 1984, Роман-антиутопия\n\n"},
+	// 	{command: "/addFilm", commandDescription: " - добавить новый фильм в Вашу фильмотеку в формате: \n\"Фильм, Описание фильма\"\nПример команды: /addFilm Джонни Мнемоник, фантастика\n\n"},
+	// 	{command: "/getGames", commandDescription: " - посоветовать рандомную игру из Вашего списка.\nПример команды: /getGames \nПример команды, если хотите вывести заданное количество игр: /getGames 3\n\n"},
+	// 	{command: "/getBooks", commandDescription: " - посоветовать рандомную книгу из Вашего списка.\nПример команды: /getBooks \nПример команды, если хотите вывести заданное количество игр: /getBooks 3\n\n"},
+	// 	{command: "/getFilms", commandDescription: " - посоветовать рандомный фильм из Вашего списка.\nПример команды: /getFilms \nПример команды, если хотите вывести заданное количество игр: /getFilms 3\n\n"},
+	// 	{command: "/clearAll", commandDescription: " - очистить все списки.\nПример команды: /clearAll \n\n"},
+	// 	{command: "/clearGames", commandDescription: " - очистить весь список игр или удалить определённое количество игр из списка.\nПример команды: /clearGames или /clearGames 3 \n\n"},
+	// 	{command: "/clearBooks", commandDescription: " - очистить весь список книг или удалить определённое количество книг из списка.\nПример команды: /clearBooks или /clearBooks 3 \n\n"},
+	// 	{command: "/clearFilms", commandDescription: " - очистить весь список фильмов или удалить определённое количество фильмов из списка.\nПример команды: /clearFilms или /clearFilms 3 \n\n"},
+	// }
 
-	commandsSlice := make([]string, 0, len(commands))
-	for _, s := range commands {
-		commandsSlice = append(commandsSlice, s.command, s.commandDescription)
-	}
+	// commandsSlice := make([]string, 0, len(commands))
+	// for _, s := range commands {
+	// 	commandsSlice = append(commandsSlice, s.command, s.commandDescription)
+	// }
 
 	//Список массивов, доступных к заполнению, хранению и выводу
-	games := []propertiesOfElement{}
-	books := []propertiesOfElement{}
-	films := []propertiesOfElement{}
+	games := []botmiscfunctions.PropertiesOfElement{}
+	books := []botmiscfunctions.PropertiesOfElement{}
+	films := []botmiscfunctions.PropertiesOfElement{}
 
 	tokenFile, errRead := os.ReadFile("token.txt")
 	if errRead != nil {
@@ -91,7 +93,7 @@ func main() {
 			if update.Message.IsCommand() {
 
 				if update.Message.CommandWithAt() == "start" {
-					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Привет! Я твой помощник-напоминалка-запоминалка. Я могу выполнять следующие команды: \n\n"+strings.Join(commandsSlice, ""))
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Привет! Я твой помощник-напоминалка-запоминалка. Я могу выполнять следующие команды: \n\n"+strings.Join(msghandlers.CommandPrint(), ""))
 					tgbot.Send(msg)
 				}
 
@@ -99,7 +101,7 @@ func main() {
 				if update.Message.CommandWithAt() == "addGame" {
 					if update.Message.CommandArguments() != "" {
 						gameDescription := strings.SplitN(update.Message.CommandArguments(), ", ", 2)
-						gameEntered := propertiesOfElement{nameDesc: gameDescription[0], titleDesc: gameDescription[1]}
+						gameEntered := botmiscfunctions.PropertiesOfElement{NameDesc: gameDescription[0], TitleDesc: gameDescription[1]}
 						games = append(games, gameEntered)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Игра успешно добавлена")
 						tgbot.Send(msg)
@@ -113,7 +115,7 @@ func main() {
 				if update.Message.CommandWithAt() == "addBook" {
 					if update.Message.CommandArguments() != "" {
 						bookDescription := strings.SplitN(update.Message.CommandArguments(), ", ", 2)
-						bookEntered := propertiesOfElement{nameDesc: bookDescription[0], titleDesc: bookDescription[1]}
+						bookEntered := botmiscfunctions.PropertiesOfElement{NameDesc: bookDescription[0], TitleDesc: bookDescription[1]}
 						books = append(books, bookEntered)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Книга успешно добавлена")
 						tgbot.Send(msg)
@@ -127,7 +129,7 @@ func main() {
 				if update.Message.CommandWithAt() == "addFilm" {
 					if update.Message.CommandArguments() != "" {
 						filmDescription := strings.SplitN(update.Message.CommandArguments(), ", ", 2)
-						filmEntered := propertiesOfElement{nameDesc: filmDescription[0], titleDesc: filmDescription[1]}
+						filmEntered := botmiscfunctions.PropertiesOfElement{NameDesc: filmDescription[0], TitleDesc: filmDescription[1]}
 						films = append(films, filmEntered)
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Фильм успешно добавлен")
 						tgbot.Send(msg)
@@ -143,10 +145,10 @@ func main() {
 						arguments := update.Message.CommandArguments()
 						displayRange, err := strconv.Atoi(arguments)
 						if err == nil {
-							sliceOfEntireCategory := randomizeSlice(games, displayRange)
+							sliceOfEntireCategory := botmiscfunctions.RandomizeSlice(games, displayRange)
 							sliceMsg := make([]string, 0, len(sliceOfEntireCategory))
 							for _, s := range sliceOfEntireCategory {
-								sliceMsg = append(sliceMsg, s.nameDesc, s.titleDesc)
+								sliceMsg = append(sliceMsg, s.NameDesc, s.TitleDesc)
 							}
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список игр по указанному количеству (или меньше, если элементов меньше указанного количества):\n\n"+strings.Join(sliceMsg, "\n"))
 							tgbot.Send(msg)
@@ -161,7 +163,7 @@ func main() {
 						} else {
 							sliceGames := make([]string, 0, len(games))
 							for _, s := range games {
-								sliceGames = append(sliceGames, s.nameDesc, s.titleDesc)
+								sliceGames = append(sliceGames, s.NameDesc, s.TitleDesc)
 							}
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами игр:\n\n"+strings.Join(sliceGames, "\n\n"))
 							tgbot.Send(msg)
@@ -175,10 +177,10 @@ func main() {
 						arguments := update.Message.CommandArguments()
 						displayRange, err := strconv.Atoi(arguments)
 						if err == nil {
-							sliceOfEntireCategory := randomizeSlice(books, displayRange)
+							sliceOfEntireCategory := botmiscfunctions.RandomizeSlice(books, displayRange)
 							sliceMsg := make([]string, 0, len(sliceOfEntireCategory))
 							for _, s := range sliceOfEntireCategory {
-								sliceMsg = append(sliceMsg, s.nameDesc, s.titleDesc)
+								sliceMsg = append(sliceMsg, s.NameDesc, s.TitleDesc)
 							}
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список книг по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceMsg, "\n\n"))
 							tgbot.Send(msg)
@@ -193,7 +195,7 @@ func main() {
 						} else {
 							sliceBooks := make([]string, 0, len(books))
 							for _, s := range books {
-								sliceBooks = append(sliceBooks, s.nameDesc, s.titleDesc)
+								sliceBooks = append(sliceBooks, s.NameDesc, s.TitleDesc)
 							}
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами книг:\n\n"+strings.Join(sliceBooks, "\n\n"))
 							tgbot.Send(msg)
@@ -207,10 +209,10 @@ func main() {
 						arguments := update.Message.CommandArguments()
 						displayRange, err := strconv.Atoi(arguments)
 						if err == nil {
-							sliceOfEntireCategory := randomizeSlice(films, displayRange)
+							sliceOfEntireCategory := botmiscfunctions.RandomizeSlice(films, displayRange)
 							sliceMsg := make([]string, 0, len(sliceOfEntireCategory))
 							for _, s := range sliceOfEntireCategory {
-								sliceMsg = append(sliceMsg, s.nameDesc, s.titleDesc)
+								sliceMsg = append(sliceMsg, s.NameDesc, s.TitleDesc)
 							}
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список фильмов по указанному количеству (или меньше, если элементов меньше указанного количества):\n"+strings.Join(sliceMsg, "\n\n"))
 							tgbot.Send(msg)
@@ -225,7 +227,7 @@ func main() {
 						} else {
 							sliceFilms := make([]string, 0, len(films))
 							for _, s := range films {
-								sliceFilms = append(sliceFilms, s.nameDesc, s.titleDesc)
+								sliceFilms = append(sliceFilms, s.NameDesc, s.TitleDesc)
 							}
 							msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Список всех добавленных вами фильмов:\n\n"+strings.Join(sliceFilms, "\n\n"))
 							tgbot.Send(msg)
@@ -235,9 +237,9 @@ func main() {
 
 				//Очистка всех списков /clearAll
 				if update.Message.CommandWithAt() == "clearAll" {
-					games = []propertiesOfElement{}
-					books = []propertiesOfElement{}
-					films = []propertiesOfElement{}
+					games = []botmiscfunctions.PropertiesOfElement{}
+					books = []botmiscfunctions.PropertiesOfElement{}
+					films = []botmiscfunctions.PropertiesOfElement{}
 					msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Списки успешно очищены")
 					tgbot.Send(msg)
 				}
@@ -262,7 +264,7 @@ func main() {
 							tgbot.Send(msg)
 						}
 					} else {
-						games = []propertiesOfElement{}
+						games = []botmiscfunctions.PropertiesOfElement{}
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Весь список игр успешно очищен")
 						tgbot.Send(msg)
 					}
@@ -288,7 +290,7 @@ func main() {
 							tgbot.Send(msg)
 						}
 					} else {
-						books = []propertiesOfElement{}
+						books = []botmiscfunctions.PropertiesOfElement{}
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Весь список книг успешно очищен")
 						tgbot.Send(msg)
 					}
@@ -314,13 +316,13 @@ func main() {
 							tgbot.Send(msg)
 						}
 					} else {
-						games = []propertiesOfElement{}
+						games = []botmiscfunctions.PropertiesOfElement{}
 						msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Весь список фильмов успешно очищен")
 						tgbot.Send(msg)
 					}
 				}
 			} else { //Если сообщение ЭТО НЕ команда
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Я не знаю такую команду, но я могу выполнять следующие команды: \n\n"+strings.Join(commandsSlice, ""))
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Я не знаю такую команду, но я могу выполнять следующие команды: \n\n"+strings.Join(msghandlers.CommandPrint(), ""))
 				tgbot.Send(msg)
 			} //Конец сообщение ЭТО команда
 		}
