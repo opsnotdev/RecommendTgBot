@@ -16,7 +16,7 @@ func GetElement(elementType string, params string) (msgToSend string) {
 				for _, s := range commonvariables.Games {
 					allSlice = append(allSlice, s.NameDesc, s.TitleDesc)
 				}
-				msgToSend = ("Список всех игр в Вашей коллекции:\n\n" + strings.Join(allSlice, "\n"))
+				msgToSend = ("Список всех игр в Вашей коллекции:\n\n" + strings.Join(allSlice, "\n\n"))
 			} else {
 				msgToSend = ("Вы ещё не добавили ни одной игры :(")
 			}
@@ -33,7 +33,7 @@ func GetElement(elementType string, params string) (msgToSend string) {
 				msgToSend = ("Список игр по указанному количеству (или меньше, если элементов в коллекции меньше указанного количества):\n\n" + strings.Join(sliceMsg, "\n"))
 			}
 		}
-	}
+	} //Конец условаия /getGames
 
 	if elementType == "getBooks" {
 		if params == "" {
@@ -42,7 +42,7 @@ func GetElement(elementType string, params string) (msgToSend string) {
 				for _, s := range commonvariables.Books {
 					allSlice = append(allSlice, s.NameDesc, s.TitleDesc)
 				}
-				msgToSend = ("Список всех книг в Вашей коллекции:\n\n" + strings.Join(allSlice, "\n"))
+				msgToSend = ("Список всех книг в Вашей коллекции:\n\n" + strings.Join(allSlice, "\n\n"))
 			} else {
 				msgToSend = ("Вы ещё не добавили ни одной книги :(")
 			}
@@ -59,7 +59,7 @@ func GetElement(elementType string, params string) (msgToSend string) {
 				msgToSend = ("Список книг по указанному количеству (или меньше, если элементов в коллекции меньше указанного количества):\n\n" + strings.Join(sliceMsg, "\n"))
 			}
 		}
-	}
+	} //Конец условаия /getBooks
 
 	if elementType == "getFilms" {
 		if params == "" {
@@ -68,7 +68,7 @@ func GetElement(elementType string, params string) (msgToSend string) {
 				for _, s := range commonvariables.Films {
 					allSlice = append(allSlice, s.NameDesc, s.TitleDesc)
 				}
-				msgToSend = ("Список всех фильмов в Вашей коллекции:\n\n" + strings.Join(allSlice, "\n"))
+				msgToSend = ("Список всех фильмов в Вашей коллекции:\n\n" + strings.Join(allSlice, "\n\n"))
 			} else {
 				msgToSend = ("Вы ещё не добавили ни одного фильма :(")
 			}
@@ -85,7 +85,7 @@ func GetElement(elementType string, params string) (msgToSend string) {
 				msgToSend = ("Список фильмов по указанному количеству (или меньше, если элементов в коллекции меньше указанного количества):\n\n" + strings.Join(sliceMsg, "\n"))
 			}
 		}
-	}
+	} //Конец условаия /getBooks
 
 	return msgToSend
 }
