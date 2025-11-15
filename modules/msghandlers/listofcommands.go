@@ -6,7 +6,6 @@ import (
 )
 
 func PrintAllCommands() []string {
-
 	commandsSlice := make([]string, 0, len(commonvariables.Commands))
 	for _, s := range commonvariables.Commands {
 		commandsSlice = append(commandsSlice, s.Command, s.CommandDescription)
