@@ -1,7 +1,7 @@
 package msghandlers
 
 import (
-	"recommendtgbot/modules/commonvariables"
+	"recommendtgbot/internal/commonvariables"
 	"strings"
 )
 

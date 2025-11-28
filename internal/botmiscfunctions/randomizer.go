@@ -2,7 +2,7 @@ package botmiscfunctions
 
 import (
 	"math/rand"
-	"recommendtgbot/modules/commonvariables"
+	"recommendtgbot/internal/commonvariables"
 	"slices"
 )
 

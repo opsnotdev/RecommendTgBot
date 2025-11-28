@@ -2,8 +2,8 @@ package msghandlers
 
 import (
 	"fmt"
-	"recommendtgbot/modules/botmiscfunctions"
-	"recommendtgbot/modules/commonvariables"
+	"recommendtgbot/internal/botmiscfunctions"
+	"recommendtgbot/internal/commonvariables"
 	"strconv"
 	"strings"
 )

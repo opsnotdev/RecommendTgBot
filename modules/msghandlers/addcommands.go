@@ -1,7 +1,7 @@
 package msghandlers
 
 import (
-	"recommendtgbot/modules/commonvariables"
+	"recommendtgbot/internal/commonvariables"
 )
 
 func AddElement(elementType string, params []string) (msgToSend string) {

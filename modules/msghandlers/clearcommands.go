@@ -2,7 +2,7 @@ package msghandlers
 
 import (
 	"fmt"
-	"recommendtgbot/modules/commonvariables"
+	"recommendtgbot/internal/commonvariables"
 	"slices"
 	"strconv"
 )
